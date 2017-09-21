@@ -1,6 +1,6 @@
 # ELEC5622Healthome
 ## Description
-This is an application aimed to monitor people's healh at home and predict if they have some disease especially for a diabetes prediction.
+This is an application aimed to monitor people's health at home and predict if they have some disease especially for a diabetes prediction.
 
 ## Technology
 + Arduino
