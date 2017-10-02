@@ -41,7 +41,23 @@ def register(request):
 def profile(request):
 	user_id = request.session['user_id']
 	user = User.objects.get(pk=user_id)
+	if request.method == 'POST':
+		if "add" in request.POST:
+			board_no = request.POST['add_board']
+			new_board = ArduinoBoard(
+					user=user,
+					board=board_no,
+					used='True'
+				)
+			new_board.save()
+		elif "delete" in request.POST:
+			board_no = request.POST['delete_board']
+			ArduinoBoard.objects.filter(user=user, board=board_no).delete()
+		return HttpResponseRedirect('/diabetes/profile/')
+	arduino = ArduinoBoard.objects.filter(user=user)
 	context = {
 		"user": user,
+		"tag": "profile",
+		"boards": arduino,
 	}
 	return render(request, "profile.html", context)

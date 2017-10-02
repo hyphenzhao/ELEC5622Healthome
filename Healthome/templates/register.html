@@ -8,7 +8,7 @@
     			<h2> Healthome - Register </h2>
   			</div>	
   			<div class="card-body container">
-  				<form method="POST" action="/register/" role="form" data-toggle="validator">
+  				<form method="POST" action="{% url 'register' %}" role="form" data-toggle="validator">
   					{% csrf_token %} 
   					<!-- References: http://1000hz.github.io/bootstrap-validator/ -->
   					<div class="form-group row">
@@ -42,7 +42,7 @@
     						<input type="input" class="form-control" id="lastName" name="lastname" placeholder="Last Name" required />
     					</div>
    	 				</div>
-   	 				<a class="btn btn-secondary" href="/diabetes/">Back</a>
+   	 				<a class="btn btn-secondary" href="{% url 'index' %}">Back</a>
     				<button type="submit" class="btn btn-primary">Submit</button>
   				</form>
   			</div>
