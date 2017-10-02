@@ -61,3 +61,45 @@ def profile(request):
 		"boards": arduino,
 	}
 	return render(request, "profile.html", context)
+
+def input(request):
+	user_id = request.session['user_id']
+	user = User.objects.get(pk=user_id)
+	if InputBodyStatus.objects.filter(user=user).exists():
+		body_status = InputBodyStatus.objects.filter(user=user).order_by('-id')[0]
+		context = {
+			"user": user,
+			"tag": "input",
+			"status": body_status,
+		}
+		return render(request, "input.html", context)
+	if request.method == 'POST':
+		new_satuts = InputBodyStatus(
+				user=user,
+				pregnant=request.POST['pregnant'],
+				skinfold=request.POST['skinfold'],
+				seruminsulin=request.POST['seruminsulin'],
+				bmi=request.POST['bmi'],
+				pedigree=request.POST['pedigree'],
+				age=request.POST['age'],
+			)
+		new_satuts.save()
+		body_status = InputBodyStatus.objects.filter(user=user).order_by('-id')[0]
+		context = {
+			"user": user,
+			"tag": "input",
+			"status": body_status,
+			"message": "Body status saved successfully!",
+		}
+		return render(request, "input.html", context)
+	context = {
+			"user": user,
+			"tag": "input",
+		}
+	return render(request, "input.html", context)
+
+def arduino(request):
+	return render(request, "arduino.html")
+
+def result(request):
+	return render(request, "result.html")
