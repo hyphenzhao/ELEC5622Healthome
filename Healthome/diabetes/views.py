@@ -65,16 +65,8 @@ def profile(request):
 def input(request):
 	user_id = request.session['user_id']
 	user = User.objects.get(pk=user_id)
-	if InputBodyStatus.objects.filter(user=user).exists():
-		body_status = InputBodyStatus.objects.filter(user=user).order_by('-id')[0]
-		context = {
-			"user": user,
-			"tag": "input",
-			"status": body_status,
-		}
-		return render(request, "input.html", context)
 	if request.method == 'POST':
-		new_satuts = InputBodyStatus(
+		new_input_satuts = InputBodyStatus(
 				user=user,
 				pregnant=request.POST['pregnant'],
 				skinfold=request.POST['skinfold'],
@@ -83,13 +75,21 @@ def input(request):
 				pedigree=request.POST['pedigree'],
 				age=request.POST['age'],
 			)
-		new_satuts.save()
+		new_input_satuts.save()
 		body_status = InputBodyStatus.objects.filter(user=user).order_by('-id')[0]
 		context = {
 			"user": user,
 			"tag": "input",
 			"status": body_status,
 			"message": "Body status saved successfully!",
+		}
+		return render(request, "input.html", context)
+	if InputBodyStatus.objects.filter(user=user).exists():
+		body_status = InputBodyStatus.objects.filter(user=user).order_by('-id')[0]
+		context = {
+			"user": user,
+			"tag": "input",
+			"status": body_status,
 		}
 		return render(request, "input.html", context)
 	context = {
@@ -99,7 +99,36 @@ def input(request):
 	return render(request, "input.html", context)
 
 def arduino(request):
-	return render(request, "arduino.html")
+	user_id = request.session['user_id']
+	user = User.objects.get(pk=user_id)
+	if request.method == 'POST':
+		new_test_satuts = TestBodyStatus(
+				user=user,
+				glucose=request.POST['glucose'],
+				bloodpressure=request.POST['bloodpressure']
+			)
+		new_test_satuts.save()
+		body_status = TestBodyStatus.objects.filter(user=user).order_by('-id')[0]
+		context = {
+			"user": user,
+			"tag": "arduino",
+			"status": body_status,
+			"message": "Arduino Board test result got successfully!",
+		}
+		return render(request, "arduino.html", context)
+	if TestBodyStatus.objects.filter(user=user).exists():
+		body_status = TestBodyStatus.objects.filter(user=user).order_by('-id')[0]
+		context = {
+			"user": user,
+			"tag": "arduino",
+			"status": body_status,
+		}
+		return render(request, "arduino.html", context)
+	context = {
+			"user": user,
+			"tag": "arduino",
+		}
+	return render(request, "arduino.html", context)
 
 def result(request):
 	user_id = request.session['user_id']
