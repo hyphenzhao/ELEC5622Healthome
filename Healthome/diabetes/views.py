@@ -4,6 +4,7 @@ from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth import authenticate
 from .models import *
+from services import *
 
 
 def index(request):
@@ -153,3 +154,19 @@ def result(request):
 		"results": test_result,
 	}
 	return render(request, "result.html", context)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

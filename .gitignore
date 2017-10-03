@@ -3,3 +3,4 @@ Healthome/*.pyc
 Healthome/diabetes/*.pyc
 Healthome/diabetes/migrations/*.pyc
 Heathome/Healthome/*.pyc
+*.DS_Store
