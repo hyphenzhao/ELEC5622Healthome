@@ -31,7 +31,23 @@ class TestBodyStatus(models.Model):
 		on_delete=models.CASCADE,
 	)
 	glucose = models.DecimalField(max_digits=25, decimal_places=15)
-	bloodpresure = models.DecimalField(max_digits=25, decimal_places=15)
+	bloodpressure = models.DecimalField(max_digits=25, decimal_places=15)
 	testdate = models.DateTimeField(auto_now_add=True, blank=True)
 
+class TestResult(models.Model):
+	user = models.ForeignKey(
+			User,
+			on_delete=models.CASCADE,
+		)
+	inputstatus = models.ForeignKey(
+			InputBodyStatus,
+			on_delete=models.CASCADE,
+		)
+	teststatus = models.ForeignKey(
+			TestBodyStatus,
+			on_delete=models.CASCADE,
+		)
+	result = models.DecimalField(max_digits=25, decimal_places=15)
+	resultdate = models.DateTimeField(auto_now_add=True, blank=True)
+			
 # Create your models here.

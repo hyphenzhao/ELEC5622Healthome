@@ -1,5 +1,7 @@
 import csv
 import math
+import os
+from django.conf import settings
 
 def calculate_probability(testPoint):
 
@@ -8,8 +10,8 @@ def calculate_probability(testPoint):
 	nosize = 1.0
 	no = 1.0
 	index = 0
-
-	with open('../static/data/pima_output.csv', 'rb') as csvfile:
+	file_path = os.path.join(settings.BASE_DIR, 'static/data/pima_output.csv')
+	with open(file_path, 'rb') as csvfile:
 		pima = csv.reader(csvfile, delimiter=',', quotechar='|')
 		for row in pima:
 			if len(row) == 2:
@@ -18,12 +20,13 @@ def calculate_probability(testPoint):
 				yessize = float(row[0])
 				nosize = float(row[1])
 			elif len(row) == 4:
-				if testPoint[index] == -1.0:
-					testPoint[index] = (float(row[0]) * yessize + float(row[2]) * nosize) / (yessize + nosize)
-				yes *= single_probability(float(row[0]), float(row[1]), testPoint[index])
-				no *= single_probability(float(row[2]), float(row[3]), testPoint[index])
+				data = float(testPoint[index])
+				if data == -1.0:
+					data = (float(row[0]) * yessize + float(row[2]) * nosize) / (yessize + nosize)
+				yes *= single_probability(float(row[0]), float(row[1]), data)
+				no *= single_probability(float(row[2]), float(row[3]), data)
 				index += 1
-	result = yes / (yes + no)
+	result = (yes * 100.0) / (yes + no)
 
 	return result
 
