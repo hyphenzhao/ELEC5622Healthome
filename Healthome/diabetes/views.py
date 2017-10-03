@@ -102,4 +102,25 @@ def arduino(request):
 	return render(request, "arduino.html")
 
 def result(request):
-	return render(request, "result.html")
+	user_id = request.session['user_id']
+	user = User.objects.get(pk=user_id)
+	if request.method == 'POST':
+		i = InputBodyStatus.objects.filter(user=user).order_by('-id')[0]
+		t = TestBodyStatus.objects.filter(user=user).order_by('-id')[0]
+		testpoint = [i.pregnant,t.glucose,t.bloodpressure,i.skinfold,i.seruminsulin,i.bmi,i.pedigree,i.age]
+		r = calculate_probability(testpoint)
+		new_result = TestResult(
+				user=user,
+				inputstatus=i,
+				teststatus=t,
+				result=r,
+			)
+		new_result.save()
+		# return render(request, "result.html", context)
+	test_result = TestResult.objects.filter(user=user).order_by('-id')
+	context = {
+		"user": user,
+		"tag": "result",
+		"results": test_result,
+	}
+	return render(request, "result.html", context)
