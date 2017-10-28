@@ -9,6 +9,7 @@ from django.urls import reverse
 from .models import *
 from . import views
 
+
 class DiabetesInputTest(TestCase):
 	def setUp(self):
 		user = User.objects.create_user(
@@ -124,6 +125,71 @@ class DiabetesProfileTest(TestCase):
 		response = self.client.post('/diabetes/profile/', data=board_data, follow=True)
 		self.assertRedirects(response,'/diabetes/profile/')
 		self.assertNotContains(response, "123456")
+
+class DiabetesRegisterTest(TestCase):
+ def test_create_user(self):
+  user = User.objects.create_user(
+    username = "unittest@email.com",
+    password = "password",
+    email = "unittest@email.com",
+    first_name = "firstname",
+    last_name = "lastname"
+   )
+  user.save()
+
+ def test_register_view(self):
+  response = self.client.get("/register/", follow=True)
+  self.assertEqual(response.resolver_match.func, views.register)
+
+ def test_register_new_user(self):
+  data = {
+   "email": "unittest@email.com",
+   "password": "password",
+   "firstname": "firstname",
+   "lastname": "lastname"
+  }
+  response = self.client.post('/register/', data=data, follow=True)
+  self.assertEqual(response.status_code, 200)
+  self.assertRedirects(response,'/diabetes/')
+
+
+class DiabetesLoginTest(TestCase):
+ def setUp(self):
+  user = User.objects.create_user(
+    username = "test@test.com",
+    password = "123456",
+    email = "test@test.com",
+    first_name = "firstname",
+    last_name = "lastname"
+   )
+  user.save()
+
+ def test_index(self):
+  response = self.client.get('/diabetes/', follow=True)
+  self.assertEqual(response.status_code, 200)
+  self.assertContains(response, "Email")
+  self.assertContains(response, "Password")
+  self.assertEqual(response.resolver_match.func, views.index)
+
+ def test_login_valid(self):
+  data = {
+   "email": "test@test.com",
+   "password": "123456"
+  }
+  response = self.client.post('/diabetes/', data=data, follow=True)
+  self.assertEqual(response.status_code, 200)
+  self.assertEqual(response.resolver_match.func, views.profile)
+  self.assertRedirects(response,'/diabetes/profile/')
+
+ def test_login_invalid(self):
+  data = {
+   "email": "test@test.com",
+   "password": "nopassword"
+  }
+  response = self.client.post('/diabetes/', data=data, follow=True)
+  self.assertEqual(response.status_code, 200)
+  self.assertContains(response, "The email and password pair does not exist.")
+  self.assertEqual(response.resolver_match.func, views.index)
 
 class DiabetesResultTest(TestCase):
 	def setUp(self):
