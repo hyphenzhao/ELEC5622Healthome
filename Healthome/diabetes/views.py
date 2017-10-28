@@ -36,7 +36,8 @@ def register(request):
 				first_name = firstname,
 				last_name = lastname
 			)
-		return render(request, "index.html")
+		user.save()
+		return HttpResponseRedirect('/diabetes/')
 	return render(request, "register.html")
 
 def profile(request):
