@@ -23,16 +23,11 @@
     Design:            David Gascon
     Implementation:    Luis Martin / Victor Boria
 */
-#include <Adafruit_GFX_AS.h>
-#include <Adafruit_ILI9341_AS.h>
+
 #include <MySignals.h>
 #include "Wire.h"
 #include "SPI.h"
 
-Adafruit_ILI9341_AS tft = Adafruit_ILI9341_AS(TFT_CS, TFT_DC);
-
-int glucometer = 0;
-char hun, ten, one;
 
 void setup()
 {
@@ -40,27 +35,6 @@ void setup()
 
   MySignals.begin();
 
-  MySignals.initSensorUART();
-  MySignals.enableSensorUART(GLUCOMETER);
-  delay(1000);
-  MySignals.getGlucose();
-  MySignals.serialFlush();
-  Serial.begin(115200);
-  glucometer = MySignals.glucometerData[0].glucose;
-  Serial.println(glucometer);
-  MySignals.disableSensorUART();
-
-//  tft.init();
-//  tft.setRotation(2);
-//  tft.fillScreen(ILI9341_BLACK);
-//  tft.setTextColor(ILI9341_WHITE, ILI9341_BLACK);
-//  tft.drawString("Your arduino number is: 123456", 0, 0, 2);
-//  tft.drawString("Glucometer:", 0, 15, 2);
-//  tft.drawNumber(glucometer, 100, 15, 2);
-
-  hun = glucometer / 100 + '0';
-  ten = (glucometer / 10) % 10 + '0';
-  one = glucometer % 10 + '0';
   //Enable WiFi ESP8266 Power -> bit1:1
   bitSet(MySignals.expanderState, EXP_ESP8266_POWER);
   MySignals.expanderWrite(MySignals.expanderState);
@@ -105,12 +79,8 @@ void setup()
       MySignals.println("Connected!");
       if (sendATcommand("AT+CIPSTART=\"TCP\",\"18.220.113.18\",8000", "OK", 100000)) {
         MySignals.println("Connected to google!");
-        sendATcommand("AT+CIPSEND=111", "OK", 100000);
-        char *httprequest = "GET /diabetes/arduino/?arduino_board_no=123456&glucose=000 HTTP/1.1\r\nHost: 172.20.10.2:8000\r\nConnection: close\r\n";
-        httprequest[55] = hun;
-        httprequest[56] = ten;
-        httprequest[57] = one;
-        sendATcommand(httprequest, "OK", 20000);
+        sendATcommand("AT+CIPSEND=129", "OK", 100000);
+        sendATcommand("GET /diabetes/arduino/?arduino_board_no=123456&glucose=102&bloodpressure=71 HTTP/1.1\r\nHost: 18.220.113.18:8000\r\nConnection: close\r\n", "OK", 20000);
         sendATcommand("AT+CIPCLOSE", "OK", 20000);
       } else {
         MySignals.println("Error of TCP");

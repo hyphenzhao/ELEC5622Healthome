@@ -45,7 +45,7 @@ void setup()
   tft.setTextColor(ILI9341_WHITE, ILI9341_BLACK);
   
 
-  tft.drawString("Blood pressure:", 0, 0, 2);
+  tft.drawString("Your arduino number is: 123456", 0, 0, 2);
 }
 
 void loop()
@@ -119,7 +119,7 @@ void sendMessageToServer(int pressure) {
     if (sendATcommand("AT+CWJAP=\"Hiphone\",\"zhao123456\"", "OK", 20000))
     {
       MySignals.println("Connected!");
-      if (sendATcommand("AT+CIPSTART=\"TCP\",\"172.20.10.2\",8000", "OK", 100000)) {
+      if (sendATcommand("AT+CIPSTART=\"TCP\",\"18.220.113.18\",8000", "OK", 100000)) {
         MySignals.println("Connected to google!");
         sendATcommand("AT+CIPSEND=117", "OK", 100000);
         String httprequest = "GET /diabetes/arduino/?arduino_board_no=123456&bloodpressure="+ String(pressure) +" HTTP/1.1\r\nHost: 172.20.10.2:8000\r\nConnection: close\r\n";
