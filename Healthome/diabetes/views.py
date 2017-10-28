@@ -100,6 +100,35 @@ def input(request):
 	return render(request, "input.html", context)
 
 def arduino(request):
+	if (request.method == 'GET') and ("arduino_board_no" in request.GET) and (request.GET["arduino_board_no"]!=""):
+		arduino_board = ArduinoBoard.objects.filter(board=request.GET["arduino_board_no"]).order_by('-id')[0]
+		user = arduino_board.user
+		body_status_list = TestBodyStatus.objects.filter(user=user)
+		if body_status_list:
+			if("bloodpressure" not in request.GET):
+				bloodpressure = body_status_list.order_by('-id')[0].bloodpressure
+			else:
+				bloodpressure = request.GET['bloodpressure']
+			if("glucose" not in request.GET):
+				glucose = body_status_list.order_by('-id')[0].glucose
+			else:
+				glucose = request.GET['glucose']
+		else:
+			if("bloodpressure" not in request.GET):
+				bloodpressure = 0
+			else:
+				bloodpressure = request.GET['bloodpressure']
+			if("glucose" not in request.GET):
+				glucose = 0
+			else:
+				glucose = request.GET['glucose']
+		new_test_satuts = TestBodyStatus(
+				user=user,
+				glucose=glucose,
+				bloodpressure=bloodpressure
+			)	
+		new_test_satuts.save()
+		return HttpResponse("Save successfully!");
 	user_id = request.session['user_id']
 	user = User.objects.get(pk=user_id)
 	if request.method == 'POST':
@@ -135,26 +164,52 @@ def result(request):
 	user_id = request.session['user_id']
 	user = User.objects.get(pk=user_id)
 	if request.method == 'POST':
-		i = InputBodyStatus.objects.filter(user=user).order_by('-id')[0]
-		t = TestBodyStatus.objects.filter(user=user).order_by('-id')[0]
-		testpoint = [i.pregnant,t.glucose,t.bloodpressure,i.skinfold,i.seruminsulin,i.bmi,i.pedigree,i.age]
-		r = calculate_probability(testpoint)
-		new_result = TestResult(
-				user=user,
-				inputstatus=i,
-				teststatus=t,
-				result=r,
-			)
-		new_result.save()
-		# return render(request, "result.html", context)
+		if "add" in request.POST:
+			i = InputBodyStatus.objects.filter(user=user).order_by('-id')[0]
+			t = TestBodyStatus.objects.filter(user=user).order_by('-id')[0]
+			testpoint = [i.pregnant,t.glucose,t.bloodpressure,i.skinfold,i.seruminsulin,i.bmi,i.pedigree,i.age]
+			r = calculate_probability(testpoint)
+			new_result = TestResult(
+					user=user,
+					inputstatus=i,
+					teststatus=t,
+					result=r,
+				)
+			new_result.save()
+		elif "delete" in request.POST:
+			record_id = request.POST['recordID']
+			TestResult.objects.get(pk=record_id).delete()
 	test_result = TestResult.objects.filter(user=user).order_by('-id')
-	context = {
-		"user": user,
-		"tag": "result",
-		"results": test_result,
-	}
+	arduino_status = TestBodyStatus.objects.filter(user=user)
+	input_status = InputBodyStatus.objects.filter(user=user)
+	if arduino_status and input_status:
+		context = {
+			"user": user,
+			"tag": "result",
+			"results": test_result,
+			"inputstatus": input_status.order_by('-id')[0],
+			"arduinostatus":arduino_status.order_by('-id')[0],
+			"avaliable":"yes"
+		}
+	else:
+		context = {
+			"user": user,
+			"tag": "result",
+			"results": test_result,
+			"avaliable":"no"
+		}
 	return render(request, "result.html", context)
 
+def test(request):
+	if request.method == "POST":
+		context = {
+			"board": request.POST["arduino_board_no"],
+			"bloodpressure": request.POST['bloodpressure'],
+			"glucose": request.POST['glucose']
+		}
+		return render(request, "test.html", context)
+
+	return HttpResponse("Nothing posted.")
 
 
 

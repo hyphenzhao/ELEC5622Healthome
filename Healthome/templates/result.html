@@ -8,7 +8,45 @@
 				<h4 class="card-title">New Test</h4>
 				<form action="{% url 'result' %}" method="POST">
 					{% csrf_token %} 
-					<button type="submit" class="btn btn-primary">Run a new test</button>
+          {% if avaliable == "yes" %}
+            <div class="card">
+              <div class="card-body">
+                <table class="table table-bordered table-light">
+                  <thead>
+                    <tr class="table-info">
+                      <th scope="col">Number of times pregnant</th>
+                      <th scope="col">Triceps skin fold thickness</th>
+                      <th scope="col">2-Hour serum insulin</th>
+                      <th scope="col">Body mass index</th>
+                      <th scope="col">Diabetes pedigree function</th>
+                      <th scope="col">Age</th>
+                      <th scope="col">Diastolic blood pressure</th>
+                      <th scope="col">Glucose</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>{{inputstatus.pregnant|floatformat}}</td>
+                      <td>{{inputstatus.skinfold|floatformat}}</td>
+                      <td>{{inputstatus.seruminsulin|floatformat}}</td>
+                      <td>{{inputstatus.bmi|floatformat}}</td>
+                      <td>{{inputstatus.pedigree|floatformat}}</td>
+                      <td>{{inputstatus.age|floatformat}}</td>
+                      <td>{{arduinostatus.bloodpressure|floatformat}}</td>
+                      <td>{{arduinostatus.glucose|floatformat}}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+					  <button type="submit" name="add" class="btn btn-primary">Run a new test</button>
+          {% elif avaliable == "no" %}
+            <div class="alert alert-danger" role="alert">
+              Please fill in all required forms before start test!
+            </div>
+
+            <button type="submit" name="add" class="btn btn-secondary" disabled>Run a new test</button>
+          {% endif %}
 				</form>
 			</div>
 		</div>
@@ -25,6 +63,32 @@
    				<div id="collapse{{r.id}}" class="collapse" role="tabpanel" aria-labelledby="heading{{r.id}}" data-parent="#accordion">
       				<div class="card-body">
       					<h2>{{r.result}}%</h2>
+      					{% if r.result > 85 %}
+      					<div class="alert alert-danger" role="alert">
+  							There is a high possibility that you have got a diabetes. <br>
+  							We recommend you to see a doctor.
+						</div>
+						{% elif r.result > 65 %}
+						<div class="alert alert-warning" role="alert">
+  							There is a possibility that you have got a diabetes. <br>
+  							Please pay more attention on your diet and exercise.
+						</div>
+						{% elif r.result > 50 %}
+						<div class="alert alert-primary" role="alert">
+  							There is a low possibility that you have got a diabetes. <br>
+  							Please keep a healthier style.
+						</div>
+						{% else %}
+						<div class="alert alert-success" role="alert">
+  							You seems to be very healthy! <br>
+  							Good job!
+						</div>
+      					{% endif %}
+      					<form action="{% url 'result' %}" method="POST">
+      						{% csrf_token %} 
+      						<input type="hidden" name="recordID" value="{{r.id}}" />
+          					<button type="submit" name="delete" class="btn btn-danger">Delete</button>
+      					</form>
       				</div>
     			</div>
   			</div>

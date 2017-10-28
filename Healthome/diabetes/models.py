@@ -30,6 +30,7 @@ class TestBodyStatus(models.Model):
 		User,
 		on_delete=models.CASCADE,
 	)
+	arduino = models.CharField(max_length=30)
 	glucose = models.DecimalField(max_digits=25, decimal_places=15)
 	bloodpressure = models.DecimalField(max_digits=25, decimal_places=15)
 	testdate = models.DateTimeField(auto_now_add=True, blank=True)

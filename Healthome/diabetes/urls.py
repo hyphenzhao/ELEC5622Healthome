@@ -8,4 +8,5 @@ urlpatterns = [
     url(r'^input/$',views.input, name='input'),
     url(r'^arduino/$',views.arduino, name='arduino'),
     url(r'^result/$',views.result, name='result'),
+    url(r'^test/$',views.test, name='test'),
 ]
