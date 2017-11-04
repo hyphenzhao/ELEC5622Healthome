@@ -1,4 +1,7 @@
 # ELEC5622Healthome
+## Announcement
+The arduino board code is developed by the group. Since the board code should be tested on the board in time, it is impossible to code seperately. Additionally, there were lots of issues when we coding the arduino board. Some team members who may not take part in the coding, they devoted their time and effors or resolving issues. ** HyphenZhao submitted the code on behalf of the whole group.**
+
 ## Description
 This is an application aimed to monitor people's health at home and predict if they have some disease especially for a diabetes prediction.
 
